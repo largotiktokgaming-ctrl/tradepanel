@@ -1,127 +1,64 @@
-local Player = game.Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
-
--- GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = Player:WaitForChild("PlayerGui")
-ScreenGui.ResetOnSpawn = false
-
--- Frame principale
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 450, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -225, 0.5, -130)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 20, 35)
-MainFrame.BorderSizePixel = 0
-MainFrame.Parent = ScreenGui
-
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 14)
-
-local Stroke = Instance.new("UIStroke", MainFrame)
-Stroke.Color = Color3.fromRGB(0,170,255)
-Stroke.Thickness = 1.5
-
--- Barre du haut (drag)
-local TopBar = Instance.new("Frame")
-TopBar.Size = UDim2.new(1,0,0,45)
-TopBar.BackgroundColor3 = Color3.fromRGB(25, 30, 50)
-TopBar.BorderSizePixel = 0
-TopBar.Parent = MainFrame
-Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0,14)
-
--- Titre
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1,0,1,0)
-Title.BackgroundTransparency = 1
-Title.Text = "Trade Panel"
-Title.TextColor3 = Color3.fromRGB(255,255,255)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
-Title.Parent = TopBar
-
--------------------------------------------------
--- FONCTION TOGGLE (avec texte agrandi)
--------------------------------------------------
-
-local function CreateToggle(text, posY)
-
-	local Label = Instance.new("TextLabel")
-	Label.Position = UDim2.new(0,30,0,posY)
-	Label.Size = UDim2.new(0.6,0,0,40)
-	Label.BackgroundTransparency = 1
-	Label.Text = text
-	Label.TextColor3 = Color3.fromRGB(255,255,255)
-	Label.Font = Enum.Font.GothamBold
-	Label.TextSize = 26 -- 🔥 Texte agrandi
-	Label.TextXAlignment = Enum.TextXAlignment.Left
-	Label.Parent = MainFrame
-
-	local Button = Instance.new("TextButton")
-	Button.Position = UDim2.new(0.68,0,0,posY-5)
-	Button.Size = UDim2.new(0,120,0,45)
-	Button.Text = "DESACTIVE"
-	Button.BackgroundColor3 = Color3.fromRGB(40,40,40)
-	Button.TextColor3 = Color3.fromRGB(255,255,255)
-	Button.Font = Enum.Font.GothamBold
-	Button.TextSize = 18
-	Button.Parent = MainFrame
-	Instance.new("UICorner", Button).CornerRadius = UDim.new(0,10)
-
-	local state = false
-
-	Button.MouseButton1Click:Connect(function()
-		state = not state
-		
-		if state then
-			Button.Text = "ACTIVE"
-			Button.BackgroundColor3 = Color3.fromRGB(0,170,255) -- 🔵 Bleu
-		else
-			Button.Text = "DESACTIVE"
-			Button.BackgroundColor3 = Color3.fromRGB(40,40,40) -- ⚫ Noir
-		end
-	end)
+-- Début du script à héberger
+local p=game.Players.LocalPlayer
+local u=game:GetService("UserInputService")
+local g=Instance.new("ScreenGui",p.PlayerGui)
+g.ResetOnSpawn=false
+local f=Instance.new("Frame",g)
+f.Size=UDim2.new(0,450,0,260)
+f.Position=UDim2.new(0.5,-225,0.5,-130)
+f.BackgroundColor3=Color3.fromRGB(15,20,35)
+Instance.new("UICorner",f).CornerRadius=UDim.new(0,14)
+Instance.new("UIStroke",f).Color=Color3.fromRGB(0,170,255)
+Instance.new("UIStroke",f).Thickness=1.5
+local t=Instance.new("Frame",f)
+t.Size=UDim2.new(1,0,0,45)
+t.BackgroundColor3=Color3.fromRGB(25,30,50)
+Instance.new("UICorner",t).CornerRadius=UDim.new(0,14)
+local l=Instance.new("TextLabel",t)
+l.Size=UDim2.new(1,0,1,0)
+l.BackgroundTransparency=1
+l.Text="Trade Panel"
+l.TextColor3=Color3.fromRGB(255,255,255)
+l.TextScaled=true
+l.Font=Enum.Font.GothamBold
+function c(n,y)
+  local a=Instance.new("TextLabel",f)
+  a.Position=UDim2.new(0,30,0,y)
+  a.Size=UDim2.new(0.6,0,0,40)
+  a.BackgroundTransparency=1
+  a.Text=n
+  a.TextColor3=Color3.fromRGB(255,255,255)
+  a.Font=Enum.Font.GothamBold
+  a.TextSize=26
+  a.TextXAlignment=Enum.TextXAlignment.Left
+  local b=Instance.new("TextButton",f)
+  b.Position=UDim2.new(0.68,0,0,y-5)
+  b.Size=UDim2.new(0,120,0,45)
+  b.Text="DESACTIVE"
+  b.BackgroundColor3=Color3.fromRGB(40,40,40)
+  b.TextColor3=Color3.fromRGB(255,255,255)
+  b.Font=Enum.Font.GothamBold
+  b.TextSize=18
+  Instance.new("UICorner",b).CornerRadius=UDim.new(0,10)
+  local s=false
+  b.MouseButton1Click:Connect(function()
+    s=not s
+    if s then b.Text="ACTIVE" b.BackgroundColor3=Color3.fromRGB(0,170,255)
+    else b.Text="DESACTIVE" b.BackgroundColor3=Color3.fromRGB(40,40,40) end
+  end)
 end
-
--- Création des options
-CreateToggle("Freeze Trade :", 90)
-CreateToggle("Auto Accept :", 160)
-
--------------------------------------------------
--- SYSTEME DRAG
--------------------------------------------------
-
-local dragging = false
-local dragInput
-local dragStart
-local startPos
-
-TopBar.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = MainFrame.Position
-		
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
+c("Freeze Trade :",90)
+c("Auto Accept :",160)
+local d=false
+local m,i,o
+t.InputBegan:Connect(function(x)
+  if x.UserInputType==Enum.UserInputType.MouseButton1 then
+    d=true
+    m=x.Position
+    i=f.Position
+    x.Changed:Connect(function() if x.UserInputState==Enum.UserInputState.End then d=false end end)
+  end
 end)
-
-TopBar.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		dragInput = input
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		local delta = input.Position - dragStart
-		MainFrame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
-	end
-end)
+t.InputChanged:Connect(function(x) if x.UserInputType==Enum.UserInputType.MouseMovement then o=x end end)
+u.InputChanged:Connect(function(x) if x==o and d then local y=x.Position-m f.Position=UDim2.new(i.X.Scale,i.X.Offset+y.X,i.Y.Scale,i.Y.Offset+y.Y) end end)
+-- Fin du script
